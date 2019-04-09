@@ -6,7 +6,7 @@ import numpy as np
 from scipy.linalg import expm
 from astropy.io import fits
 import os, sys, shutil
-from astropy.convolution import AiryDisk2DKernel
+import timeit
 import params
 
 pi=np.pi
@@ -227,6 +227,8 @@ def makeGaussian(size, fwhm, center):
         x0 = center[0]
         y0 = center[1]
     return np.exp(-4*np.log(2) * ((x-x0)**2 + (y-y0)**2) / fwhm**2)
+
+start = timeit.default_timer()
 
 project_name=params.project_name
 EXTmodel=params.EXTmodel
@@ -518,10 +520,10 @@ lunstarinfo.write('#Seeing:  %f \n' %(seeing))
 lunstarinfo.write('#Spectroscopic Resolution:  %f \n' %(Rspec))
 lunstarinfo.write('#Lambda_min:  %f \n' %(lminspec))
 lunstarinfo.write('#Lambda_max:  %f \n' %(lmaxspec))
-lunstarinfo.write('#filestar:  %f \n' %(filestar))
-lunstarinfo.write('#Columndensities:  %f \n' %(Columndensities))
-lunstarinfo.write('#filecloud:  %f \n' %(filecloud))
-lunstarinfo.write('#EXTmodel:  %f \n' %(EXTmodel))
+lunstarinfo.write('#filestar:  %s \n' %(filestar))
+lunstarinfo.write('#Columndensities:  %s \n' %(Columndensities))
+lunstarinfo.write('#filecloud:  %s \n' %(filecloud))
+lunstarinfo.write('#EXTmodel:  %s \n' %(EXTmodel))
 lunstarinfo.write('#Rv:  %f \n' %(Rv))
 lunstarinfo.close()
 
@@ -532,3 +534,6 @@ myso_logo('outspec')
 print outputspecFL
 print outputspecL
 print  '   '
+stop = timeit.default_timer()
+
+print 'Simulation time using 1 core: ', (stop - start)/60. ,'[min]'  
