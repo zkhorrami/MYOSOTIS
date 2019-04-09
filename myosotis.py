@@ -446,7 +446,7 @@ for ii in range(nstar):
         mag=Mbolsun-2.5*loglstar[ii]-(bc1)+5.0*log10(distancestar[ii]/10.0)
         fluxstar[ii]=10.**(mag/(-2.5))
 
-        lunstarinfo.write("%13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %60s " %(massstar[ii], logagestar[ii],kzstar[ii],log10(Teffstar[ii]),loggstar[ii],loglstar[ii],AVstar,mag,newx[ii]+xpix/2.,newy[ii]+ypix/2.,readsed))
+        lunstarinfo.write("%13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %13.4f %60s \n" %(massstar[ii], logagestar[ii],kzstar[ii],log10(Teffstar[ii]),loggstar[ii],loglstar[ii],AVstar,mag,newx[ii]+xpix/2.,newy[ii]+ypix/2.,readsed))
 
         if (PSFtype == 'gaussian'):
             airy1=makeGaussian((xpix,ypix),fwhm/res,center=(newx[ii]+xpix/2.,newy[ii]+ypix/2.))
@@ -464,7 +464,7 @@ for ii in range(nstar):
 #                linterp,lambda,weight,wavelength,wavelength_weight
                 wavelength_weight=np.interp(wavelength,lambdaF,weight)
                 bc3=BCcals(wavelength,flux*wavelength_weight,[Lspecarr[ll-1],Lspecarr[ll],Lspecarr[ll+1],Lspecarr[ll+2]],[0.0,1.0,1.0,0.0],AVstar,Rv,Teffstar[ii],EXTmodel,DrainearrLam,DrainearrK)
-                mag3=Mbolsun-2.5*loglstar[ii]-bc3+5.0*alog10(distancestar[ii]/10.0)
+                mag3=Mbolsun-2.5*loglstar[ii]-bc3+5.0*log10(distancestar[ii]/10.0)
                 fluxstar3=float(10.**(mag3/(-2.5)))
                 if (PSFtype == 'gaussian'):
                     airy3=makeGaussian((xpix,ypix),fwhm/res,center=(newx[ii]+xpix/2.,newy[ii]+ypix/2.))
@@ -502,7 +502,6 @@ if (spectroscopy == 'yes'):
     hdu = fits.PrimaryHDU(sceneimFL)
     hdu.writeto(outputspecFL)
 
-print noise2add               
 lunstarinfo.write('#faintestflux: %f \n' %(faintestflux))
 lunstarinfo.write('#noise:  %f \n' %(noise))
 lunstarinfo.write('#SNR:  %f \n' %(SNR))
