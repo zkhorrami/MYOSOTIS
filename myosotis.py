@@ -245,6 +245,7 @@ fovx=params.fovx
 fovy=params.fovy
 fwhm=params.fwhm
 SNR=params.SNR
+noise2add=params.noise2add
 Rv=params.Rv
 distance=params.distance
 
@@ -367,16 +368,16 @@ if (Columndensities == 'sph'):
     
     positioncvector=zip(xcloud,ycloud,zcloud)
     zeinabc=rot_euler(positioncvector,np.multiply([alphai,bettai,gammai],pi/180.))
-    xcloud=zeinabc[0:nstar,0]
-    ycloud=zeinabc[0:nstar,1]
-    zcloud=zeinabc[0:nstar,2]
+    xcloud=zeinabc[0:ncloud,0]
+    ycloud=zeinabc[0:ncloud,1]
+    zcloud=zeinabc[0:ncloud,2]
 
     distancecloud=np.add(distance,-zcloud)
     pc2pixcloud=206264.806247/distancecloud/res
     newxcloud=xcloud*pc2pixcloud #convert x[pc] into pixel position
     newycloud=ycloud*pc2pixcloud
     newzcloud=zcloud*pc2pixcloud
-    newhcloud=hpar*pc2pixcloud
+    newhcloud=np.multiply(hpar,pc2pixcloud)
 
 #  reading the isochrones
 myso_logo('iso')
@@ -495,10 +496,14 @@ hdu = fits.PrimaryHDU(sceneim)
 hdu.writeto(outputim)
 
 faintestflux=min(i for i in fluxstar if i > 0)
-noise=faintestflux*4.*log(2.0)/(pi*(fwhm/res)*(fwhm/res))/SNR
-noise2add=noise*np.random.rand(int(ypix),int(xpix))
+if (SNR != 0.0): 
+    noise=faintestflux*4.*log(2.0)/(pi*(fwhm/res)*(fwhm/res))/SNR 
+else: 
+    noise=noise2add
 
-hdu = fits.PrimaryHDU(sceneim+noise2add)
+noise2addim=noise*np.random.rand(int(ypix),int(xpix))
+
+hdu = fits.PrimaryHDU(sceneim+noise2addim)
 hdu.writeto(outputimnoise)
 
 if (spectroscopy == 'yes'):
