@@ -6,6 +6,7 @@ import numpy as np
 from scipy.linalg import expm
 from astropy.io import fits
 import os, sys, shutil
+from astropy.convolution import AiryDisk2DKernel
 import params
 
 pi=np.pi
@@ -134,23 +135,23 @@ def extinctions(lam,Av,Rv):
     Alam=0.0  
     xarr=1./lam
     if ((xarr >= 0.3) and (xarr < 1.1)):
-      ax1=0.574*(xarr^1.61)
-      bx1=-0.527*(xarr^1.61)
+      ax1=0.574*(xarr**1.61)
+      bx1=-0.527*(xarr**1.61)
       Alam=Av*(ax1+bx1/Rv)
     elif ((xarr >= 1.1) and (xarr < 3.3)):
       y = xarr-1.82
-      ax2 = 1.0+0.17699*y-0.50447*(y^2.0)-0.02427*(y^3.0)+0.72085*(y^4.0) +0.01979*(y^5.0)-0.77530*(y^6.0)+0.32999*(y^7.0)
-      bx2 = 1.41338*y+2.28305*(y^2.0)+1.07233*(y^3.0)-5.38434*(y^4.0)-0.62251*(y^5.0)+5.30260*(y^6.0) -2.09002*(y^7.0)
+      ax2 = 1.0+0.17699*y-0.50447*(y**2.0)-0.02427*(y**3.0)+0.72085*(y**4.0) +0.01979*(y**5.0)-0.77530*(y**6.0)+0.32999*(y**7.0)
+      bx2 = 1.41338*y+2.28305*(y**2.0)+1.07233*(y**3.0)-5.38434*(y**4.0)-0.62251*(y**5.0)+5.30260*(y**6.0) -2.09002*(y**7.0)
       Alam=Av*(ax2+bx2/Rv)
     elif ((xarr >= 3.3) and (xarr < 5.9)):
-      ax3 = 1.752 -0.316*xarr-0.104/((xarr-4.67)^2.0 + 0.341)
-      bx3 = (-3.090)+1.825*xarr+1.206/((xarr-4.62)^2.0+0.263)
+      ax3 = 1.752 -0.316*xarr-0.104/((xarr-4.67)**2.0 + 0.341)
+      bx3 = (-3.090)+1.825*xarr+1.206/((xarr-4.62)**2.0+0.263)
       Alam=Av*(ax3+bx3/Rv)
     elif ((xarr >= 5.9) and (xarr < 8.0)):
-      fax4 = -0.04473*(xarr - 5.9)^2.0 - 0.009779*(xarr -5.9)^3.0
-      fbx4 = 0.2130*(xarr-5.9)^2.0 + 0.1207*(xarr-5.9)^3.0
-      ax4 = 1.752 - 0.316*xarr - (0.104/((xarr - 4.67)^2.0 + 0.341)) +fax4
-      bx4 = -3.090 + 1.825*xarr + (1.206/((xarr - 4.62)^2.0 + 0.263)) +fbx4
+      fax4 = -0.04473*(xarr - 5.9)**2.0 - 0.009779*(xarr -5.9)**3.0
+      fbx4 = 0.2130*(xarr-5.9)**2.0 + 0.1207*(xarr-5.9)**3.0
+      ax4 = 1.752 - 0.316*xarr - (0.104/((xarr - 4.67)**2.0 + 0.341)) +fax4
+      bx4 = -3.090 + 1.825*xarr + (1.206/((xarr - 4.62)**2.0 + 0.263)) +fbx4
       Alam=Av*(ax4+bx4/Rv)
     else:  print 'Lambda,',lam,', is out of range for Fitzpatrick (1999) model!!!'
     return Alam
@@ -167,7 +168,7 @@ def BCcal(wavelength,flux,lambdaF,weight,AVstar,Rv,Teff,par2vega,EXTmodel,Draine
     wavelength_weight=np.interp(wavelength,lambdaF,weight)
     par1=0.0
     par2=0.0
-    alamarr=[] #fltarr((size(wavelength))[-1])
+    alamarr=np.zeros(len(wavelength)) #fltarr((size(wavelength))[-1])
 
     if (EXTmodel == 'Dmodel'):
      kappased=np.interp(wavelength,DrainearrLam,DrainearrK)
@@ -177,7 +178,7 @@ def BCcal(wavelength,flux,lambdaF,weight,AVstar,Rv,Teff,par2vega,EXTmodel,Draine
     for i in range(1, len(wavelength)):
       ltemp=wavelength[i]*1.0e-4 
       if (EXTmodel == 'Fmodel' and wavelength[i] >= 1250. and wavelength[i] <= 33333.):
-          alamarr[i]=extinctions(ltemp,Avstar,Rv)
+          alamarr[i]=extinctions(ltemp,AVstar,Rv)
       par1 += wavelength[i]*flux[i]*(10.0**(-0.4*alamarr[i]))*wavelength_weight[i]*(wavelength[i]-wavelength[i-1])
 #     par2 += wavelength[i]*wavelength_weight[i]*(wavelength[i]-wavelength[i-1])  ;!!!! par2 will be calculating from Vega flux
     BCfilter = Mbolsun + bolconstant - 10.*log10(Teff)+2.5*log10(par1/par2vega)
@@ -195,7 +196,7 @@ def BCcals(wavelength,flux,lambdaF,weight,AVstar,Rv,Teff,EXTmodel,DrainearrLam,D
     wavelength_weight=np.interp(wavelength,lambdaF,weight)
     par1=0.0
     par2=0.0
-    alamarr=[] #fltarr((size(wavelength))[-1])
+    alamarr=np.zeros(len(wavelength)) #fltarr((size(wavelength))[-1])
 
     if (EXTmodel == 'Dmodel'):
      kappased=np.interp(wavelength,DrainearrLam,DrainearrK)
@@ -205,7 +206,7 @@ def BCcals(wavelength,flux,lambdaF,weight,AVstar,Rv,Teff,EXTmodel,DrainearrLam,D
     for i in range(1, len(wavelength)):
       ltemp=wavelength[i]*1.0e-4 
       if (EXTmodel == 'Fmodel' and wavelength[i] >= 1250. and wavelength[i] <= 33333.):
-          alamarr[i]=extinctions(ltemp,Avstar,Rv)
+          alamarr[i]=extinctions(ltemp,AVstar,Rv)
       par1 += wavelength[i]*flux[i]*(10.0**(-0.4*alamarr[i]))*wavelength_weight[i]*(wavelength[i]-wavelength[i-1])
       par2 += wavelength[i]*wavelength_weight[i]*(wavelength[i]-wavelength[i-1])  #!!!! par2 will be calculating from Vega flux
     BCfilter = Mbolsun + bolconstant - 10.*log10(Teff)+2.5*log10(par1/par2)
@@ -285,7 +286,7 @@ lunstarinfo.write("#       1              2             3            4          
 
 lambdaF,weight=np.loadtxt(filterfile,unpack=True)
 
-
+DrainearrLam, DrainearrK=[0.0],[0.0]
 if (EXTmodel == 'Dmodel'):
     if (Rv == 3.1): 
         Drainemodel='source/Draine3p1.txt'
@@ -517,6 +518,11 @@ lunstarinfo.write('#Seeing:  %f \n' %(seeing))
 lunstarinfo.write('#Spectroscopic Resolution:  %f \n' %(Rspec))
 lunstarinfo.write('#Lambda_min:  %f \n' %(lminspec))
 lunstarinfo.write('#Lambda_max:  %f \n' %(lmaxspec))
+lunstarinfo.write('#filestar:  %f \n' %(filestar))
+lunstarinfo.write('#Columndensities:  %f \n' %(Columndensities))
+lunstarinfo.write('#filecloud:  %f \n' %(filecloud))
+lunstarinfo.write('#EXTmodel:  %f \n' %(EXTmodel))
+lunstarinfo.write('#Rv:  %f \n' %(Rv))
 lunstarinfo.close()
 
 myso_logo('outim')
