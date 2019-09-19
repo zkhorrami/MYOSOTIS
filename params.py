@@ -1,5 +1,5 @@
 project_name='test1'
-filterfile='Filters/Gaia/GAIA0.G.dat'
+filterfile='Filters/hst/wfpc2/HST-WFPC2.f555w.dat'
 filestar='Examples/Teststar1.txt'
 Columndensities='sph'
 filecloud= 'Examples/NoCloud'
@@ -12,10 +12,11 @@ gammai=0.0
 res=0.05
 fovx=20.
 fovy=20.
-distance=500.
+distance=50000.
 fwhm=0.11
-SNR=2.0
-spectroscopy = 'yes'     # Spectroscopy output, choose 'yes' or 'no'
+SNR=0.0
+noise2add=6.15883e-12   #noise in the unit of flux/pix2=erg/cm2/s/A/pix2
+spectroscopy = 'no'     # Spectroscopy output, choose 'yes' or 'no'
 lminspec     = 5000.    # Minimum wavelength [A] should be set within your filter transparency
 lmaxspec     = 6000.    # Maximum wavelength [A] 
 Rspec        = 100 #700      # Spectral resolution (please check your SED library, should not be larger than the resolution of the SEDs)
