@@ -16,7 +16,7 @@
 ;  updated Jan. 2018
 
 pro mainscene,project_name,filestar,filecloud,filter,distance,Rv,res,fovx,fovy,fwhm,spectroscopy,$
-  lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype
+  lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype,noise2add
  
 
   evolutionary = 'Evolutionary/Z0p015.dat'
@@ -53,6 +53,7 @@ endif
 
   
   outputim     = project_name+'/'+project_name+'_image.fits'
+  outputpsf     = project_name+'/PSF_'+project_name+'_image.fits'
   outputimnoise=project_name+'/'+project_name+'_imageNoise.fits'
   outputspecFL = project_name+'/'+project_name+'_cube_spectra.fits'
   outputspecL  = project_name+'/'+project_name+'_Lambda.txt'
@@ -259,7 +260,6 @@ endfor
           else if (PSFtype eq 'airy') then airy3=airy_pattern(xpix,ypix,newx[ii]+xpix/2.,newy[ii]+ypix/2.,2./(fwhm/res))
 
 
-
           airy3=airy3/(total(airy3)) ;to be sure about normaized total flux
 
           if (velocitydis eq 'yes') then begin
@@ -284,11 +284,11 @@ endfor
   print,'Number of stars in the FoV: ',nstars
   writefits,outputim,sceneim
   faintestflux=min(fluxstar(where(fluxstar gt 0.0)))
-  noise=faintestflux*4.*alog(2.0)/(!PI*(fwhm/res)*(fwhm/res))/SNR
+  if (SNR ne 0.0) then noise=faintestflux*4.*alog(2.0)/(!PI*(fwhm/res)*(fwhm/res))/SNR else noise=noise2add
   ;print,noise,mean(sceneim)
   writefits,outputimnoise,sceneim+noise*randomu(seed,xpix,ypix)
   ;writefits,outputspecL,sceneL
-  if (spectroscopy eq 'yes') then  writefits,outputspecFL,sceneimFL
+  if (spectroscopy eq 'yes') then  writefits,outputspecFL,sceneimFL  
 
   printf,lunstarinfo,'#faintestflux: ',faintestflux
   printf,lunstarinfo,'#noise: ',noise
@@ -305,6 +305,12 @@ endfor
   printf,lunstarinfo,'#Spectroscopic Resolution: ',Rspec
   printf,lunstarinfo,'#Lambda_min: ',lminspec 
   printf,lunstarinfo,'#Lambda_max: ',lmaxspec
+  printf,lunstarinfo,'#filestar: ',filestar
+  printf,lunstarinfo,'#Columndensities: ',Columndensities
+  printf,lunstarinfo,'#filecloud: ',filecloud
+  printf,lunstarinfo,'#EXTmodel: ',EXTmodel
+  printf,lunstarinfo,'#Rv: ',Rv
+
   close,lunstarinfo
   free_lun,lunstarinfo
   myso_logo,'outim'
@@ -314,7 +320,9 @@ endfor
   print, outputspecFL
   print, outputspecL
   print, '   '
-
+  if (PSFtype eq 'gaussian') then airypsf=psf_gaussian(Npixel=[16*round(fwhm/res),16*round(fwhm/res)],fwhm=[fwhm/res,fwhm/res],CENTROID =[(16*round(fwhm/res))/2.,(16*round(fwhm/res))/2.],/NORMALIZE,/Double)
+  if (PSFtype eq 'airy') then airypsf=airy_pattern(16*round(fwhm/res),16*round(fwhm/res),(16*round(fwhm/res))/2.,(16*round(fwhm/res))/2.,2./(fwhm/res))
+  writefits,outputpsf,airypsf
 end
 
 

@@ -59,17 +59,17 @@
 
 pro MYOSOTIS
 
-  project_name = 'test2'    ; Name of the project
-  filestar = 'Examples/Teststar2.txt' ; Star's information file (should be 10 columns)
-  filecloud= 'NoCloud'      ; Cloud's information file (should be 8 columns). Will be needed if Columndensities = 'sph'
-  Columndensities= 'user'   ; 'sph': reads the cloud information file, 'user': reads it from the filestar, last column in the unit of [Msun/pc2]
+  project_name = 'ttttt'    ; Name of the project
+  filestar = 'inputmyso/D20S00bin00M104r10Q05-2myr.dat' ; Star's information file (should be 10 columns)
+ ; filestar = 'mystars.txt' ; Star's information file (should be 10 columns)
+  filecloud= 'NoCloud';'inputmyso/homo-M2000.00-R2.00000' ;'NoCloud'      ; Cloud's information file (should be 8 columns). Will be needed if Columndensities = 'sph'
+  Columndensities= 'sph'   ; 'sph': reads the cloud information file, 'user': reads it from the filestar, last column in the unit of [Msun/pc2]
 
-  filter = 'Filters/generic/johnson/Generic-Johnson.V.dat' ;choose the path of your favourite filter!
- 
-  res  = 0.1           ; pixel resolution [arcsec/pix]
-  fovx = 8             ; Field-of-view X  [arcsec]
-  fovy = 8             ; Field-of-view  Y [arcsec]
-  fwhm = 0.2           ; FWHM of the PSF, angular resolution of the instrument
+  filter = 'Filters/hst/wfpc2/HST-WFPC2.f814w.dat' ;choose the path of your favourite filter!
+  res  = 0.05          ; pixel resolution [arcsec/pix]
+  fovx = 35             ; Field-of-view X  [arcsec]
+  fovy = 35             ; Field-of-view  Y [arcsec]
+  fwhm = 0.11           ; FWHM of the PSF, angular resolution of the instrument
   PSFtype= 'gaussian'   ;'airy' Type of PSF for distribution of the stellar fluxes on the detector: 'gassian' or 'airy'
   
   distance = 50000.      ; Distance of the observer from the reference in filestar and filecloud [pc]
@@ -82,9 +82,9 @@ pro MYOSOTIS
   seeing = 0.8            ; Seeing [arcsec]
 
   spectroscopy = 'no'     ; Spectroscopy output, choose 'yes' or 'no'
-  lminspec     = 3900.    ; Minimum wavelength [A] should be set within your filter transparency
-  lmaxspec     = 5100.    ; Maximum wavelength [A] 
-  Rspec        = 700      ; Spectral resolution (please check your SED library, should not be larger than the resolution of the SEDs)
+  lminspec     = 4000.    ; Minimum wavelength [A] should be set within your filter transparency
+  lmaxspec     = 6000.    ; Maximum wavelength [A] 
+  Rspec        = 600      ; Spectral resolution (please check your SED library, should not be larger than the resolution of the SEDs)
 
   velocitydis  = 'no'     ; 'yes' or 'no' : Adding Doppler shift on the spectra according to the velocity of the stars 
 
@@ -93,18 +93,18 @@ pro MYOSOTIS
   ;[0,0,0] --> X-Y
   ;[90,0,0] --> X-Z
   ;[0,90,0] --> Y-Z
-  alphai = 0   ; rotation around x [degree]
-  bettai = 0   ; rotation around y [degree]
+  alphai = 90   ; rotation around x [degree]
+  bettai = 30   ; rotation around y [degree]
   gammai = 0   ; rotation around z [degree]
 
-  SNR = 5.0    ; Signal to Noise ratio for the faintest star in the FOV
-
+  SNR = 0.0;0.1    ; Signal to Noise ratio for the faintest star in the FOV
+  noise2add=6.15883e-12;1.55350e-22;6.15883e-12 ; noise in the unit of flux/pix2=erg/cm2/s/A/pix2
   t0=SYSTIME(/SECONDS)
   FILE_MKDIR, project_name
   !PATH=!PATH+':'+Expand_Path('+./')
   myso_logo,'logo'
   mainscene,project_name,filestar,filecloud,filter,distance,Rv,res,fovx,fovy,fwhm,spectroscopy,$
-    lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype
+    lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype,noise2add
   t1=SYSTIME(/SECONDS)
   print,'Simulation time using 1 core: ',(t1-t0)/60.,'[min]'
 
