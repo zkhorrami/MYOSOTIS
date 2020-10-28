@@ -248,6 +248,7 @@ SNR=params.SNR
 noise2add=params.noise2add
 Rv=params.Rv
 distance=params.distance
+metallicityZ=params.metallicityZ
 
 spectroscopy = params.spectroscopy     # Spectroscopy output, choose 'yes' or 'no'
 lminspec     = params.lminspec    # Minimum wavelength [A] should be set within your filter transparency
@@ -260,10 +261,19 @@ PSFtype=params.PSFtype
 Adaptiveoptics=params.Adaptiveoptics
 seeing=params.seeing
 SR=params.SR
-vegafile='vegaf'
+vegafile='SEDs/vegaf'
 evolutionary='Evolutionary/Z0p015.dat'
 foldersed='SEDs/'
 Mbolsun = 4.77
+
+if (metallicityZ == 1.0):
+    evolutionary='Evolutionary/Z0p015.dat'
+    foldersed='SEDs/Z1/'
+elif (metallicityZ == 0.5):
+    evolutionary='Evolutionary/Z0p008.dat'
+    foldersed='SEDs/Z0p5/'
+else: print '!!!metallicityZ should be 1.0 (for solar metallicity) or 0.5 (for LMC)'
+
 
 outputim     = project_name+'/'+project_name+'_image.fits' 
 outputimnoise=project_name+'/'+project_name+'_imageNoise.fits'
@@ -313,7 +323,7 @@ print 'FoV: ',fovx,'" x ',fovy,'" =',int(xpix),'[pix] x',int(ypix),'[pix]'
 
 sceneim=np.full((int(ypix),int(xpix)),0.0)
 
-wavelengthvega,fluxvega=np.loadtxt(foldersed+vegafile,unpack=True)
+wavelengthvega,fluxvega=np.loadtxt(vegafile,unpack=True)
 wavelength_weightvega=np.interp(wavelengthvega,lambdaF,weight)
 par2vega=0.0
 for i in range(1, (len(wavelengthvega))):
