@@ -1,4 +1,4 @@
-project_name='test1'
+project_name='test11'
 filterfile='Filters/hst/wfpc2/HST-WFPC2.f555w.dat'
 filestar='Examples/Teststar1.txt'
 Columndensities='sph'
@@ -6,6 +6,7 @@ filecloud= 'Examples/NoCloud'
 OBtreatment='yes'
 EXTmodel='Dmodel'
 Rv=3.1
+metallicityZ=1.0 #should be 1.0 (for solar) or 0.5 (for LMC). this will affect choosing the evolutionary and atmosphere models
 alphai=0.0
 bettai=0.0
 gammai=0.0

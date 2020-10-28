@@ -59,10 +59,10 @@
 
 pro MYOSOTIS
 
-  project_name = 'ttttt'    ; Name of the project
-  filestar = 'inputmyso/D20S00bin00M104r10Q05-2myr.dat' ; Star's information file (should be 10 columns)
+  project_name = 'test2'    ; Name of the project
+  filestar = 'Examples/Teststar1.txt' ; Star's information file (should be 10 columns)
  ; filestar = 'mystars.txt' ; Star's information file (should be 10 columns)
-  filecloud= 'NoCloud';'inputmyso/homo-M2000.00-R2.00000' ;'NoCloud'      ; Cloud's information file (should be 8 columns). Will be needed if Columndensities = 'sph'
+  filecloud= 'Examples/NoCloud';'inputmyso/homo-M2000.00-R2.00000' ;'NoCloud'      ; Cloud's information file (should be 8 columns). Will be needed if Columndensities = 'sph'
   Columndensities= 'sph'   ; 'sph': reads the cloud information file, 'user': reads it from the filestar, last column in the unit of [Msun/pc2]
 
   filter = 'Filters/hst/wfpc2/HST-WFPC2.f814w.dat' ;choose the path of your favourite filter!
@@ -76,6 +76,7 @@ pro MYOSOTIS
   EXTmodel = 'Dmodel'    ; Extinction model, choose either 'Dmodel' OR 'Fmodel' (see the manual for more information on these models)
   Rv       = 3.1         ; Rv should be 3.1 or 4.0 or 5.5 if EXTmodel='Dmodel', otherwise can be set to any value.
   
+  metallicityZ=0.5         ; Z=1 for Galactic or Z=0.5 for LMC  will affect the evolutionary and atmosphere models 
   OBtreatment    = 'yes'  ; Uses TLUSTY SEDs for stars with Teff > 15000 K
   Adaptiveoptics = 'no'   ; Using of adaptive optics
   SR = 1.0                ; Strehl Ratio, should be between 0.0 - 1.0
@@ -104,7 +105,7 @@ pro MYOSOTIS
   !PATH=!PATH+':'+Expand_Path('+./')
   myso_logo,'logo'
   mainscene,project_name,filestar,filecloud,filter,distance,Rv,res,fovx,fovy,fwhm,spectroscopy,$
-    lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype,noise2add
+    lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype,noise2add,metallicityZ
   t1=SYSTIME(/SECONDS)
   print,'Simulation time using 1 core: ',(t1-t0)/60.,'[min]'
 
