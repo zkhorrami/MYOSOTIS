@@ -16,12 +16,18 @@
 ;  updated Jan. 2018
 
 pro mainscene,project_name,filestar,filecloud,filter,distance,Rv,res,fovx,fovy,fwhm,spectroscopy,$
-  lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype,noise2add
+  lminspec,lmaxspec,Rspec,OBtreatment,Adaptiveoptics,SR,seeing,alphai,bettai,gammai,velocitydis,SNR,EXTmodel,Columndensities,PSFtype,noise2add,metallicityZ
  
-
+if (metallicityZ eq 1.0) then begin
   evolutionary = 'Evolutionary/Z0p015.dat'
-  foldersed = 'SEDs/'
-
+  foldersed = 'SEDs/Z1/'
+endif else if (metallicityZ eq 0.5) then begin
+  evolutionary = 'Evolutionary/Z0p008.dat'
+  foldersed = 'SEDs/Z0p5/'
+endif else begin
+  print, '!!! metallicityZ should be 1.0 (for Solar) or 0.5 (for LMC)'
+  stop
+endelse
 
 if (EXTmodel eq 'Dmodel') then begin
 
@@ -164,7 +170,7 @@ readcol, filter,lambda,weight,/silent
   endif
 
 ;Vega mag system:
-readcol,foldersed+'vegaf',wavelengthvega,fluxvega,/silent
+readcol,'SEDs/vegaf',wavelengthvega,fluxvega,/silent
 linterp,lambda,weight,wavelengthvega,wavelength_weightvega
 par2vega=0.0
 for i=1, (size(wavelengthvega))[-1]-1 do begin
