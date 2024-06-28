@@ -49,6 +49,7 @@ def myso_logo(wh):
         print '||        MMMMMMMMMMMWNOlccokKWMMMMMMMMMMMMMMMMMWNNWMMMMMMMM      ||'
         print '||        MMMMMMMMMMMMMW0xkKWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM      ||'
         print ' =======================     FORGET ME NOT     ===================  '
+        print '| =============================================================================== |'
 
     if (wh == 'star'): 
         print ' =============================================================== '
